@@ -1,0 +1,180 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  SALES_REP
+  WAREHOUSE
+  ACCOUNTANT
+}
+
+enum DealStage {
+  LEAD
+  QUALIFIED
+  PROPOSAL
+  WON
+  LOST
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  OVERDUE
+}
+
+enum MovementType {
+  IN
+  OUT
+}
+
+model Organization {
+  id        String    @id @default(uuid())
+  name      String
+  logo      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  users     User[]
+}
+
+model User {
+  id             String       @id @default(uuid())
+  name           String
+  email          String       @unique
+  role           Role         @default(SALES_REP)
+  avatarUrl      String?
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  deals          Deal[]       @relation("AssignedDeals")
+  activities     Activity[]
+  stockMovements StockMovement[]
+  createdInvoices Invoice[]
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  company   String?
+  tags      String[]
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  deals      Deal[]
+  invoices   Invoice[]
+  activities Activity[]
+}
+
+model Deal {
+  id           String    @id @default(uuid())
+  title        String
+  value        Float     @default(0)
+  stage        DealStage @default(LEAD)
+  contactId    String
+  assignedToId String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  contact      Contact   @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  assignedTo   User      @relation("AssignedDeals", fields: [assignedToId], references: [id])
+}
+
+model Supplier {
+  id        String    @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  address   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products  Product[]
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  sku         String   @unique
+  category    String
+  price       Float    @default(0)
+  stock       Int      @default(0)
+  threshold   Int      @default(10)
+  imageUrl    String?
+  supplierId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  supplier       Supplier?       @relation(fields: [supplierId], references: [id])
+  stockMovements StockMovement[]
+  lineItems      InvoiceLineItem[]
+}
+
+model StockMovement {
+  id          String       @id @default(uuid())
+  productId   String
+  type        MovementType
+  quantity    Int
+  reason      String?
+  createdById String
+  createdAt   DateTime     @default(now())
+
+  product     Product      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdBy   User         @relation(fields: [createdById], references: [id])
+}
+
+model Invoice {
+  id          String        @id @default(uuid())
+  number      String        @unique
+  contactId   String
+  status      InvoiceStatus @default(DRAFT)
+  subtotal    Float         @default(0)
+  taxRate     Float         @default(0)
+  taxAmount   Float         @default(0)
+  total       Float         @default(0)
+  dueDate     DateTime?
+  createdById String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  contact     Contact           @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  createdBy   User              @relation(fields: [createdById], references: [id])
+  lineItems   InvoiceLineItem[]
+}
+
+model InvoiceLineItem {
+  id          String   @id @default(uuid())
+  invoiceId   String
+  productId   String
+  description String
+  quantity    Int      @default(1)
+  unitPrice   Float    @default(0)
+  total       Float    @default(0)
+
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [id])
+}
+
+model Activity {
+  id        String   @id @default(uuid())
+  type      String   // NOTE, CALL, STATUS_CHANGE
+  content   String
+  contactId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+}
