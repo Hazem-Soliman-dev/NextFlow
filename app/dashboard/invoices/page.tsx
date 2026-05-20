@@ -5,6 +5,7 @@ import Link from "next/link"
 import { format, isPast, isToday } from "date-fns"
 import { Plus, MoreHorizontal, FileText, CheckCircle2, Clock, AlertCircle } from "lucide-react"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -44,13 +45,13 @@ export default function InvoicesPage() {
 
     switch (displayStatus) {
       case "DRAFT":
-        return <Badge variant="secondary" className="bg-slate-500/10 text-slate-500 border-slate-500/20"><FileText className="mr-1 h-3 w-3" /> Draft</Badge>
+        return <Badge variant="secondary" className="bg-slate-500/10 text-slate-400 border-slate-500/20"><FileText className="mr-1 h-3 w-3" /> Draft</Badge>
       case "SENT":
-        return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 border-blue-500/20"><Clock className="mr-1 h-3 w-3" /> Sent</Badge>
+        return <Badge variant="secondary" className="bg-blue-500/10 text-blue-400 border-blue-500/20"><Clock className="mr-1 h-3 w-3" /> Sent</Badge>
       case "PAID":
-        return <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20"><CheckCircle2 className="mr-1 h-3 w-3" /> Paid</Badge>
+        return <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20"><CheckCircle2 className="mr-1 h-3 w-3" /> Paid</Badge>
       case "OVERDUE":
-        return <Badge variant="secondary" className="bg-red-500/10 text-red-500 border-red-500/20"><AlertCircle className="mr-1 h-3 w-3" /> Overdue</Badge>
+        return <Badge variant="secondary" className="bg-red-500/10 text-red-400 border-red-500/20"><AlertCircle className="mr-1 h-3 w-3" /> Overdue</Badge>
       default:
         return <Badge variant="outline">{status}</Badge>
     }
@@ -65,7 +66,7 @@ export default function InvoicesPage() {
         </div>
         <Link
           href="/dashboard/invoices/new"
-          className={buttonVariants({ className: "bg-indigo-600 hover:bg-indigo-700 text-white" })}
+          className={cn(buttonVariants({ className: "bg-indigo-600 hover:bg-indigo-700 text-white" }))}
         >
           <Plus className="mr-2 h-4 w-4" /> Create Invoice
         </Link>
@@ -122,7 +123,7 @@ export default function InvoicesPage() {
               invoices.map((invoice) => (
                 <TableRow key={invoice.id} className="hover:bg-muted/50 cursor-pointer">
                   <TableCell className="font-medium text-foreground">
-                    <Link href={`/dashboard/invoices/${invoice.id}`} className="hover:underline text-indigo-500">
+                    <Link href={`/dashboard/invoices/${invoice.id}`} className="hover:underline text-indigo-400">
                       {invoice.number}
                     </Link>
                   </TableCell>

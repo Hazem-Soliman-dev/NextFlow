@@ -128,7 +128,7 @@ export default function ProductsPage() {
                             <PackageIcon className="h-5 w-5 text-muted-foreground" />
                           )}
                         </div>
-                        <span className="font-medium hover:underline text-indigo-500">{product.name}</span>
+                        <span className="font-medium hover:underline text-indigo-400">{product.name}</span>
                       </Link>
                     </TableCell>
                     <TableCell className="font-mono text-xs text-muted-foreground">{product.sku}</TableCell>

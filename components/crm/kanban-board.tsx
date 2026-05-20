@@ -1,9 +1,18 @@
 "use client"
 
 import { useState } from "react"
-import { DndContext, DragOverlay, closestCorners, KeyboardSensor, PointerSensor, useSensor, useSensors, DragStartEvent, DragEndEvent } from "@dnd-kit/core"
+import { DndContext, DragOverlay, closestCorners, KeyboardSensor, PointerSensor, useSensor, useSensors, DragStartEvent, DragEndEvent, useDroppable } from "@dnd-kit/core"
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { DealCard, SortableDealCard } from "@/components/crm/deal-card"
+
+function KanbanColumnContent({ id, children }: { id: string; children: React.ReactNode }) {
+  const { setNodeRef } = useDroppable({ id })
+  return (
+    <div ref={setNodeRef} className="flex-1 p-3 overflow-y-auto min-h-[150px]">
+      {children}
+    </div>
+  )
+}
 
 const STAGES = [
   { id: "LEAD", title: "Lead", color: "bg-slate-500/10 border-slate-500/20 text-slate-400" },
@@ -90,7 +99,7 @@ export default function KanbanBoard({ initialDeals }: { initialDeals: any[] }) {
                 <div className="text-sm font-semibold">${totalValue.toLocaleString()}</div>
               </div>
               
-              <div className="flex-1 p-3 overflow-y-auto min-h-[150px]" id={stage.id}>
+              <KanbanColumnContent id={stage.id}>
                 <SortableContext items={stageDeals.map(d => d.id)} strategy={verticalListSortingStrategy}>
                   <div className="space-y-3 pb-2 h-full">
                     {stageDeals.map(deal => (
@@ -102,7 +111,7 @@ export default function KanbanBoard({ initialDeals }: { initialDeals: any[] }) {
                     )}
                   </div>
                 </SortableContext>
-              </div>
+              </KanbanColumnContent>
             </div>
           )
         })}

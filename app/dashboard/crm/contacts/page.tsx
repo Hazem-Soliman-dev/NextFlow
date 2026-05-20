@@ -119,7 +119,7 @@ export default function ContactsPage() {
                   <TableCell className="hidden md:table-cell">
                     <div className="flex flex-wrap gap-1">
                       {contact.tags.map((tag: string) => (
-                        <Badge key={tag} variant="secondary" className="text-xs bg-indigo-500/10 text-indigo-500 border-indigo-500/20">
+                        <Badge key={tag} variant="secondary" className="text-xs bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
                           {tag}
                         </Badge>
                       ))}

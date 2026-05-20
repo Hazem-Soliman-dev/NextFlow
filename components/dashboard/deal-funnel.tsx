@@ -37,7 +37,7 @@ export function DealFunnel({ deals }: { deals: any[] }) {
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
             >
               <XAxis type="number" hide />
-              <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} className="text-sm text-muted-foreground" width={80} />
+              <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: 'var(--muted-foreground)', fontSize: 12 }} width={80} />
               <Tooltip
                 cursor={{ fill: "rgba(255,255,255,0.05)" }}
                 content={({ active, payload }) => {

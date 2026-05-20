@@ -109,13 +109,13 @@ export default function ContactDetailPage() {
             {contact.email && (
               <div className="flex items-center gap-3 text-sm">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <a href={`mailto:${contact.email}`} className="text-indigo-500 hover:underline">{contact.email}</a>
+                <a href={`mailto:${contact.email}`} className="text-indigo-400 hover:underline">{contact.email}</a>
               </div>
             )}
             {contact.phone && (
               <div className="flex items-center gap-3 text-sm">
                 <Phone className="h-4 w-4 text-muted-foreground" />
-                <a href={`tel:${contact.phone}`} className="text-indigo-500 hover:underline">{contact.phone}</a>
+                <a href={`tel:${contact.phone}`} className="text-indigo-400 hover:underline">{contact.phone}</a>
               </div>
             )}
             
@@ -128,7 +128,7 @@ export default function ContactDetailPage() {
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {contact.tags.map((tag: string) => (
-                      <Badge key={tag} variant="secondary" className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20">
+                      <Badge key={tag} variant="secondary" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/20">
                         {tag}
                       </Badge>
                     ))}
@@ -164,7 +164,7 @@ export default function ContactDetailPage() {
                   {contact.deals?.map((deal: any) => (
                     <div key={deal.id} className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-background hover:bg-muted/50 transition-colors">
                       <div>
-                        <Link href="/dashboard/crm/deals" className="font-medium text-indigo-500 hover:underline">{deal.title}</Link>
+                        <Link href="/dashboard/crm/deals" className="font-medium text-indigo-400 hover:underline">{deal.title}</Link>
                         <div className="text-xs text-muted-foreground mt-1 flex items-center gap-2">
                           <Badge variant="outline" className="text-[10px] uppercase h-5">{deal.stage}</Badge>
                           <span className="flex items-center gap-1"><User className="h-3 w-3" /> {deal.assignedTo?.name}</span>

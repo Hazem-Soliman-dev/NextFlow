@@ -51,14 +51,16 @@ export async function Topbar() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <form action={async () => {
-              "use server"
-              await signOut({ redirectTo: "/login" })
-            }}>
-              <button type="submit" className="w-full text-left">
-                <DropdownMenuItem>Log out</DropdownMenuItem>
-              </button>
-            </form>
+            <DropdownMenuItem asChild>
+              <form action={async () => {
+                "use server"
+                await signOut({ redirectTo: "/login" })
+              }} className="w-full">
+                <button type="submit" className="w-full text-left cursor-pointer">
+                  Log out
+                </button>
+              </form>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
