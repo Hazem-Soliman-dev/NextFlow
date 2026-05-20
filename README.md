@@ -6,14 +6,14 @@ Nexflow is a modern, full-stack business application demonstrating a unified CRM
 
 ## 🚀 Live Demo
 
-**[nexflow.demo.vercel.app](https://nexflow.demo.vercel.app)** *(Placeholder URL)*
+**[next-flow-taupe.vercel.app](https://next-flow-taupe.vercel.app)**
 
 *Use the built-in frictionless login to instantly switch between 5 distinct personas and test the RBAC rules.*
 
 ## 🛠 Tech Stack
 
-- **Framework:** Next.js 15 (App Router)
-- **UI & Styling:** Tailwind CSS v4, Shadcn UI, Radix Primitives
+- **Framework:** Next.js 16 (App Router) & React 19
+- **UI & Styling:** Tailwind CSS v4, Shadcn UI, Radix Primitives, Base UI
 - **Database:** Neon Serverless PostgreSQL
 - **ORM:** Prisma v5
 - **Authentication:** NextAuth.js v5 (Beta)
@@ -61,8 +61,8 @@ Nexflow implements a robust RBAC system utilizing 5 distinct roles:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/nexflow.git
-   cd nexflow
+   git clone https://github.com/Hazem-Soliman-dev/NextFlow.git
+   cd NextFlow
    ```
 
 2. **Install dependencies:**
