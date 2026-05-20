@@ -23,14 +23,14 @@ Nexflow is a modern, full-stack business application demonstrating a unified CRM
 
 ```mermaid
 graph TD
-    Client["Client (Browser)"] -->|Next.js App Router| NextAuth[NextAuth v5 Middleware]
-    NextAuth -->|Session/Role| API[API Routes / Server Actions]
-    API -->|Prisma Client| Neon[(Neon PostgreSQL)]
+    Client["Client (Browser)"] -->|Next.js App Router| NextAuth["NextAuth v5 Middleware"]
+    NextAuth -->|Session/Role| API["API Routes / Server Actions"]
+    API -->|Prisma Client| Neon[("Neon PostgreSQL")]
     
     subgraph Modules
-    CRM[CRM Module]
-    INV[Inventory Module]
-    BILL[Invoicing Module]
+    CRM["CRM Module"]
+    INV["Inventory Module"]
+    BILL["Invoicing Module"]
     end
     
     API --> CRM
