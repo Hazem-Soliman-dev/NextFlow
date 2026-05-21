@@ -20,9 +20,6 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
       <div className="w-full max-w-2xl space-y-8">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center p-3 bg-indigo-500/10 rounded-xl mb-4">
-            <span className="text-2xl">⚡</span>
-          </div>
           <h1 className="text-3xl font-bold tracking-tight">Welcome to Nexflow</h1>
           <p className="text-muted-foreground">Select a role below to jump into the demo. No password required.</p>
         </div>
