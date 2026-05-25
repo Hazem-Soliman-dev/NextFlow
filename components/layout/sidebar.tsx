@@ -5,19 +5,21 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { LayoutDashboard, Users, KanbanSquare, Package, Truck, FileText } from "lucide-react"
 import { useSession } from "next-auth/react"
+import { useLang } from "@/lib/lang-context"
 
 const NAV_ITEMS = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN", "MANAGER", "SALES_REP", "WAREHOUSE", "ACCOUNTANT"] },
-  { title: "Contacts", href: "/dashboard/crm/contacts", icon: Users, roles: ["ADMIN", "MANAGER", "SALES_REP"] },
-  { title: "Deals", href: "/dashboard/crm/deals", icon: KanbanSquare, roles: ["ADMIN", "MANAGER", "SALES_REP"] },
-  { title: "Products", href: "/dashboard/inventory/products", icon: Package, roles: ["ADMIN", "WAREHOUSE"] },
-  { title: "Suppliers", href: "/dashboard/inventory/suppliers", icon: Truck, roles: ["ADMIN", "WAREHOUSE"] },
-  { title: "Invoices", href: "/dashboard/invoices", icon: FileText, roles: ["ADMIN", "MANAGER", "ACCOUNTANT"] },
-]
+  { key: "dashboard", href: "/dashboard", icon: LayoutDashboard, roles: ["ADMIN", "MANAGER", "SALES_REP", "WAREHOUSE", "ACCOUNTANT"] },
+  { key: "contacts", href: "/dashboard/crm/contacts", icon: Users, roles: ["ADMIN", "MANAGER", "SALES_REP"] },
+  { key: "deals", href: "/dashboard/crm/deals", icon: KanbanSquare, roles: ["ADMIN", "MANAGER", "SALES_REP"] },
+  { key: "products", href: "/dashboard/inventory/products", icon: Package, roles: ["ADMIN", "WAREHOUSE"] },
+  { key: "suppliers", href: "/dashboard/inventory/suppliers", icon: Truck, roles: ["ADMIN", "WAREHOUSE"] },
+  { key: "invoices", href: "/dashboard/invoices", icon: FileText, roles: ["ADMIN", "MANAGER", "ACCOUNTANT"] },
+] as const
 
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const { strings } = useLang()
   const userRole = (session?.user as any)?.role || "ADMIN"
 
   const visibleItems = NAV_ITEMS.filter(item => item.roles.includes(userRole))
@@ -26,7 +28,7 @@ export function Sidebar({ className }: { className?: string }) {
     <aside className={cn("pb-12", className)}>
       <div className="space-y-4 py-4 h-full flex flex-col">
         <div className="px-6 py-2 mb-4 flex items-center gap-2">
-          <h2 className="text-xl font-bold tracking-tight">Nexflow</h2>
+          <h2 className="text-xl font-bold tracking-tight">{strings.appName}</h2>
         </div>
         <div className="flex-1 px-3 space-y-1">
           {visibleItems.map((item) => {
@@ -45,7 +47,7 @@ export function Sidebar({ className }: { className?: string }) {
                 )}
               >
                 <item.icon className="h-4 w-4" />
-                {item.title}
+                <span>{(strings as any)[item.key]}</span>
               </Link>
             )
           })}

@@ -1,14 +1,18 @@
 "use client"
 
 import { useState } from "react"
+import { useLang } from "@/lib/lang-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 
-export function ContactForm({ children, onSuccess }: { children: React.ReactNode, onSuccess?: () => void }) {
+export function ContactForm({ children, contact, onSuccess }: { children: React.ReactNode, contact?: any, onSuccess?: () => void }) {
+  const { strings, dir } = useLang()
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  const isEdit = !!contact
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -16,15 +20,18 @@ export function ContactForm({ children, onSuccess }: { children: React.ReactNode
     const formData = new FormData(e.currentTarget)
     
     try {
-      const res = await fetch("/api/contacts", {
-        method: "POST",
+      const url = isEdit ? `/api/contacts/${contact.id}` : "/api/contacts"
+      const method = isEdit ? "PATCH" : "POST"
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: formData.get("name"),
           email: formData.get("email"),
           company: formData.get("company"),
           phone: formData.get("phone"),
-          tags: formData.get("tags") ? String(formData.get("tags")).split(",").map(t => t.trim()) : []
+          tags: formData.get("tags") ? String(formData.get("tags")).split(",").map(t => t.trim()).filter(Boolean) : []
         })
       })
       if (res.ok) {
@@ -43,39 +50,39 @@ export function ContactForm({ children, onSuccess }: { children: React.ReactNode
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Add New Contact</DialogTitle>
+      <DialogContent className="sm:max-w-[425px]" dir={dir}>
+        <DialogHeader className="text-start">
+          <DialogTitle>{isEdit ? strings.editContact : strings.addContact}</DialogTitle>
           <DialogDescription>
-            {"Enter the details of the new contact. Click save when you're done."}
+            {isEdit ? strings.editContactDesc : strings.addContactDesc}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} key={contact?.id || "new"}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">Name</Label>
-              <Input id="name" name="name" className="col-span-3" required />
+              <Label htmlFor="name" className="ltr:text-right rtl:text-left">{strings.nameHeader}</Label>
+              <Input id="name" name="name" defaultValue={contact?.name || ""} className="col-span-3" required />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="email" className="text-right">Email</Label>
-              <Input id="email" name="email" type="email" className="col-span-3" />
+              <Label htmlFor="email" className="ltr:text-right rtl:text-left">{strings.emailHeader}</Label>
+              <Input id="email" name="email" type="email" defaultValue={contact?.email || ""} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="company" className="text-right">Company</Label>
-              <Input id="company" name="company" className="col-span-3" />
+              <Label htmlFor="company" className="ltr:text-right rtl:text-left">{strings.companyHeader}</Label>
+              <Input id="company" name="company" defaultValue={contact?.company || ""} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="phone" className="text-right">Phone</Label>
-              <Input id="phone" name="phone" className="col-span-3" />
+              <Label htmlFor="phone" className="ltr:text-right rtl:text-left">{strings.phoneHeader}</Label>
+              <Input id="phone" name="phone" defaultValue={contact?.phone || ""} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="tags" className="text-right">Tags</Label>
-              <Input id="tags" name="tags" placeholder="VIP, Lead (comma separated)" className="col-span-3" />
+              <Label htmlFor="tags" className="ltr:text-right rtl:text-left">{strings.tagsHeader}</Label>
+              <Input id="tags" name="tags" placeholder={strings.tagsPlaceholder} defaultValue={contact?.tags?.join(", ") || ""} className="col-span-3" />
             </div>
           </div>
-          <DialogFooter>
-            <Button type="submit" disabled={loading}>
-              {loading ? "Saving..." : "Save Contact"}
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button type="submit" disabled={loading} className="w-full sm:w-auto">
+              {loading ? strings.saving : strings.saveContact}
             </Button>
           </DialogFooter>
         </form>

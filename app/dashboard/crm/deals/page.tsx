@@ -7,8 +7,10 @@ import KanbanBoard from "@/components/crm/kanban-board"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useSession } from "next-auth/react"
 import { DealForm } from "@/components/crm/deal-form"
+import { useLang } from "@/lib/lang-context"
 
 export default function DealsPage() {
+  const { strings, dir } = useLang()
   const { data: session } = useSession()
   const [deals, setDeals] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -32,19 +34,19 @@ export default function DealsPage() {
   }, [refreshKey])
 
   return (
-    <div className="h-[calc(100vh-7.5rem)] md:h-[calc(100vh-8.5rem)] lg:h-[calc(100vh-9.5rem)] flex flex-col space-y-6">
+    <div className="h-[calc(100vh-7.5rem)] md:h-[calc(100vh-8.5rem)] lg:h-[calc(100vh-9.5rem)] flex flex-col space-y-6" dir={dir}>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 flex-shrink-0">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Deals Pipeline</h1>
+        <div className="text-start">
+          <h1 className="text-3xl font-bold tracking-tight">{strings.dealsTitle}</h1>
           <p className="text-muted-foreground">
             {session?.user && (session.user as any).role === "SALES_REP" 
-              ? "Manage your active deals and track progress." 
-              : "Overview of all team deals and pipeline."}
+              ? strings.dealsSubSales 
+              : strings.dealsSubTeam}
           </p>
         </div>
         <DealForm onSuccess={() => setRefreshKey(prev => prev + 1)}>
           <Button className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="mr-2 h-4 w-4" /> New Deal
+            <Plus className="mr-2 h-4 w-4" /> {strings.addDeal}
           </Button>
         </DealForm>
       </div>
@@ -61,7 +63,7 @@ export default function DealsPage() {
             ))}
           </div>
         ) : (
-          <KanbanBoard key={refreshKey} initialDeals={deals} />
+          <KanbanBoard key={refreshKey} initialDeals={deals} onRefresh={() => setRefreshKey(prev => prev + 1)} />
         )}
       </div>
     </div>

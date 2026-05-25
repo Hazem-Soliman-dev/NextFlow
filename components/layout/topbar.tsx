@@ -1,20 +1,29 @@
-import { auth, signOut } from "@/lib/auth"
+"use client"
+
+import { signOut, useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Menu } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Sidebar } from "./sidebar"
+import { ThemeToggle } from "./theme-toggle"
+import { LangToggle } from "./lang-toggle"
+import { useLang } from "@/lib/lang-context"
 
-export async function Topbar() {
-  const session = await auth()
+export function Topbar() {
+  const { data: session } = useSession()
   const user = session?.user
+  const { strings } = useLang()
+
+  const userRole = (user as any)?.role || "ADMIN"
+  const localizedRole = (strings as any)[userRole] || userRole
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-border/50 bg-background/95 px-4 backdrop-blur sm:px-6">
       <Sheet>
         <SheetTrigger asChild>
-          <Button size="icon" variant="ghost" className="md:hidden">
+          <Button size="icon" variant="ghost" className="sm:hidden">
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle Menu</span>
           </Button>
@@ -27,11 +36,14 @@ export async function Topbar() {
       <div className="flex-1" />
 
       <div className="flex items-center gap-4">
+        <LangToggle />
+        <ThemeToggle />
+
         {user && (
           <div className="hidden sm:flex items-center gap-2 text-sm">
-            <span className="text-muted-foreground">Role:</span>
+            <span className="text-muted-foreground">{strings.roleLabel}:</span>
             <span className="font-semibold text-indigo-500 px-2 py-0.5 bg-indigo-500/10 rounded-md">
-              {(user as any).role}
+              {localizedRole}
             </span>
           </div>
         )}
@@ -51,15 +63,11 @@ export async function Topbar() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <form action={async () => {
-                "use server"
-                await signOut({ redirectTo: "/login" })
-              }} className="w-full">
-                <button type="submit" className="w-full text-left cursor-pointer">
-                  Log out
-                </button>
-              </form>
+            <DropdownMenuItem 
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="w-full text-left cursor-pointer"
+            >
+              {strings.logout}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

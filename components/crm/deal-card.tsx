@@ -4,9 +4,11 @@ import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Building, User } from "lucide-react"
+import { Building, User, Pencil } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { DealForm } from "@/components/crm/deal-form"
 
-export function DealCard({ deal, isDragging = false }: { deal: any, isDragging?: boolean }) {
+export function DealCard({ deal, isDragging = false, onRefresh }: { deal: any, isDragging?: boolean, onRefresh?: () => void }) {
   const isWon = deal.stage === "WON"
   const isLost = deal.stage === "LOST"
   
@@ -19,8 +21,23 @@ export function DealCard({ deal, isDragging = false }: { deal: any, isDragging?:
       <CardContent className="p-4 flex flex-col gap-3">
         <div className="flex justify-between items-start gap-2">
           <h4 className="font-semibold text-sm leading-tight text-foreground/90">{deal.title}</h4>
-          <div className="text-sm font-bold text-indigo-400 whitespace-nowrap bg-indigo-500/10 px-2 py-0.5 rounded-md">
-            ${deal.value.toLocaleString()}
+          <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+            <div className="text-sm font-bold text-indigo-400 whitespace-nowrap bg-indigo-500/10 px-2 py-0.5 rounded-md">
+              ${deal.value.toLocaleString()}
+            </div>
+            {!isDragging && onRefresh && (
+              <div 
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <DealForm deal={deal} onSuccess={onRefresh}>
+                  <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground">
+                    <Pencil className="h-3 w-3" />
+                  </Button>
+                </DealForm>
+              </div>
+            )}
           </div>
         </div>
         
@@ -55,7 +72,7 @@ export function DealCard({ deal, isDragging = false }: { deal: any, isDragging?:
   )
 }
 
-export function SortableDealCard({ deal }: { deal: any }) {
+export function SortableDealCard({ deal, onRefresh }: { deal: any, onRefresh?: () => void }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: deal.id })
 
   const style = {
@@ -65,7 +82,7 @@ export function SortableDealCard({ deal }: { deal: any }) {
 
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="cursor-grab relative group">
-      <DealCard deal={deal} />
+      <DealCard deal={deal} onRefresh={onRefresh} />
     </div>
   )
 }

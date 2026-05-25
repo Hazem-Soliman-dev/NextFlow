@@ -3,13 +3,17 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+import { useLang } from "@/lib/lang-context"
+
 export function RevenueChart({ invoices }: { invoices: any[] }) {
+  const { lang, strings } = useLang()
+
   // Aggregate revenue by month for the last 6 months
   const data = Array.from({ length: 6 }).map((_, i) => {
     const d = new Date()
     d.setMonth(d.getMonth() - (5 - i))
     return {
-      name: d.toLocaleDateString("en-US", { month: "short" }),
+      name: d.toLocaleDateString(lang === "en" ? "en-US" : "ar-EG", { month: "short" }),
       monthIndex: d.getMonth(),
       year: d.getFullYear(),
       revenue: 0
@@ -27,9 +31,9 @@ export function RevenueChart({ invoices }: { invoices: any[] }) {
   })
 
   return (
-    <Card className="border-border/50 bg-zinc-950/40">
+    <Card className="border-border/50 bg-card/40">
       <CardHeader>
-        <CardTitle className="text-lg">Revenue Trend (Last 6 Months)</CardTitle>
+        <CardTitle className="text-lg">{strings.revenueTrend}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">

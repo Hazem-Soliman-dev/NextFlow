@@ -14,6 +14,9 @@ function KanbanColumnContent({ id, children }: { id: string; children: React.Rea
   )
 }
 
+import { useLang } from "@/lib/lang-context"
+import { TranslationKey } from "@/lib/translations"
+
 const STAGES = [
   { id: "LEAD", title: "Lead", color: "bg-slate-500/10 border-slate-500/20 text-slate-400" },
   { id: "QUALIFIED", title: "Qualified", color: "bg-blue-500/10 border-blue-500/20 text-blue-400" },
@@ -22,7 +25,16 @@ const STAGES = [
   { id: "LOST", title: "Lost", color: "bg-red-500/10 border-red-500/20 text-red-400" }
 ]
 
-export default function KanbanBoard({ initialDeals }: { initialDeals: any[] }) {
+const stageKeys: Record<string, TranslationKey> = {
+  LEAD: "stageLead",
+  QUALIFIED: "stageQualified",
+  PROPOSAL: "stageProposal",
+  WON: "stageWon",
+  LOST: "stageLost"
+}
+
+export default function KanbanBoard({ initialDeals, onRefresh }: { initialDeals: any[], onRefresh?: () => void }) {
+  const { strings } = useLang()
   const [deals, setDeals] = useState(initialDeals)
   const [activeDeal, setActiveDeal] = useState<any | null>(null)
 
@@ -37,7 +49,7 @@ export default function KanbanBoard({ initialDeals }: { initialDeals: any[] }) {
     setActiveDeal(deal)
   }
 
-  const handleDragEnd = async (event: DragEndEvent) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
     setActiveDeal(null)
 
@@ -62,7 +74,7 @@ export default function KanbanBoard({ initialDeals }: { initialDeals: any[] }) {
       
       // Persist to API
       try {
-        await fetch(`/api/deals/${activeId}`, {
+        fetch(`/api/deals/${activeId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ stage: newStage })
@@ -92,7 +104,7 @@ export default function KanbanBoard({ initialDeals }: { initialDeals: any[] }) {
               <div className="p-4 border-b border-border/30 flex items-center justify-between sticky top-0 bg-card/50 backdrop-blur-md rounded-t-xl z-10">
                 <div className="flex items-center gap-2">
                   <div className={`px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wider border ${stage.color}`}>
-                    {stage.title}
+                    {strings[stageKeys[stage.id]] || stage.title}
                   </div>
                   <span className="text-xs text-muted-foreground font-medium">{stageDeals.length}</span>
                 </div>
@@ -103,7 +115,7 @@ export default function KanbanBoard({ initialDeals }: { initialDeals: any[] }) {
                 <SortableContext items={stageDeals.map(d => d.id)} strategy={verticalListSortingStrategy}>
                   <div className="space-y-3 pb-2 h-full">
                     {stageDeals.map(deal => (
-                      <SortableDealCard key={deal.id} deal={deal} />
+                      <SortableDealCard key={deal.id} deal={deal} onRefresh={onRefresh} />
                     ))}
                     {/* Invisible drop target for empty columns */}
                     {stageDeals.length === 0 && (

@@ -58,6 +58,13 @@ export async function DELETE(
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
+    
+    // Disconnect supplier from associated products first to avoid foreign key errors
+    await prisma.product.updateMany({
+      where: { supplierId: id },
+      data: { supplierId: null }
+    });
+
     await prisma.supplier.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch {

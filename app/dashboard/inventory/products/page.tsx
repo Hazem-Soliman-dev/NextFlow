@@ -11,15 +11,34 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ProductForm } from "@/components/inventory/product-form"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useLang } from "@/lib/lang-context"
 
 const CATEGORIES = ["Electronics", "Office Supplies", "Furniture", "Software", "Hardware", "Accessories"]
 
 export default function ProductsPage() {
+  const { strings, dir } = useLang()
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState("all")
   const [refreshKey, setRefreshKey] = useState(0)
+
+  const handleDeleteProduct = async (productId: string) => {
+    if (!confirm(strings.deleteProductConfirm)) return
+    try {
+      const res = await fetch(`/api/products/${productId}`, {
+        method: "DELETE"
+      })
+      if (res.ok) {
+        setRefreshKey(prev => prev + 1)
+      } else {
+        alert("Failed to delete product. Note: Products already used in Invoices cannot be deleted.")
+      }
+    } catch (error) {
+      console.error(error)
+      alert("An error occurred")
+    }
+  }
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -45,26 +64,26 @@ export default function ProductsPage() {
   }, [query, category, refreshKey])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir={dir}>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Products</h1>
-          <p className="text-muted-foreground">Manage your inventory catalog and stock levels.</p>
+        <div className="text-start">
+          <h1 className="text-3xl font-bold tracking-tight">{strings.productsTitle}</h1>
+          <p className="text-muted-foreground">{strings.productsSub}</p>
         </div>
         <ProductForm onSuccess={() => setRefreshKey(k => k + 1)}>
           <Button className="bg-indigo-600 hover:bg-indigo-700">
-            <Plus className="mr-2 h-4 w-4" /> Add Product
+            <Plus className="mr-2 h-4 w-4" /> {strings.addProduct}
           </Button>
         </ProductForm>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 items-center">
+      <div className="flex flex-col sm:flex-row gap-4 items-center rtl:space-x-reverse">
         <div className="relative flex-1 w-full max-w-sm">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground rtl:left-auto rtl:right-2.5" />
           <Input
             type="search"
-            placeholder="Search products or SKU..."
-            className="pl-8"
+            placeholder={strings.searchProducts}
+            className="pl-8 rtl:pl-3 rtl:pr-8 text-start"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -72,12 +91,12 @@ export default function ProductsPage() {
         <div className="w-full sm:w-[200px]">
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger>
-              <SelectValue placeholder="All Categories" />
+              <SelectValue placeholder={strings.allCategories} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="all" className="text-start">{strings.allCategories}</SelectItem>
               {CATEGORIES.map(c => (
-                <SelectItem key={c} value={c}>{c}</SelectItem>
+                <SelectItem key={c} value={c} className="text-start">{c}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -88,11 +107,11 @@ export default function ProductsPage() {
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead>Product</TableHead>
-              <TableHead>SKU</TableHead>
-              <TableHead className="hidden md:table-cell">Category</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Stock</TableHead>
+              <TableHead className="text-start">{strings.productHeader}</TableHead>
+              <TableHead className="text-start">{strings.skuHeader}</TableHead>
+              <TableHead className="hidden md:table-cell text-start">{strings.categoryHeader}</TableHead>
+              <TableHead className="text-start">{strings.priceHeader}</TableHead>
+              <TableHead className="text-start">{strings.stockHeader}</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
@@ -111,7 +130,7 @@ export default function ProductsPage() {
             ) : products.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
-                  No products found.
+                  {strings.noProducts}
                 </TableCell>
               </TableRow>
             ) : (
@@ -119,25 +138,25 @@ export default function ProductsPage() {
                 const isLowStock = product.stock <= product.threshold;
                 return (
                   <TableRow key={product.id} className="hover:bg-muted/50">
-                    <TableCell>
+                    <TableCell className="text-start">
                       <Link href={`/dashboard/inventory/products/${product.id}`} className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center border border-border/50 overflow-hidden">
+                        <div className="h-10 w-10 rounded-md bg-muted flex items-center justify-center border border-border/50 overflow-hidden flex-shrink-0">
                           {product.imageUrl ? (
                             <img src={product.imageUrl} alt={product.name} className="h-full w-full object-cover" />
                           ) : (
                             <PackageIcon className="h-5 w-5 text-muted-foreground" />
                           )}
                         </div>
-                        <span className="font-medium hover:underline text-indigo-400">{product.name}</span>
+                        <span className="font-medium hover:underline text-indigo-400 text-start">{product.name}</span>
                       </Link>
                     </TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">{product.sku}</TableCell>
-                    <TableCell className="hidden md:table-cell">
+                    <TableCell className="font-mono text-xs text-muted-foreground text-start">{product.sku}</TableCell>
+                    <TableCell className="hidden md:table-cell text-start">
                       <Badge variant="outline" className="font-normal">{product.category}</Badge>
                     </TableCell>
-                    <TableCell className="font-medium">${product.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
+                    <TableCell className="font-medium text-start">${product.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                    <TableCell className="text-start">
+                      <div className="flex items-center gap-2 justify-start">
                         <span className={`font-semibold ${isLowStock ? 'text-red-500' : ''}`}>
                           {product.stock}
                         </span>
@@ -155,12 +174,17 @@ export default function ProductsPage() {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent align={dir === "rtl" ? "start" : "end"}>
                           <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/inventory/products/${product.id}`}>View Details</Link>
+                            <Link href={`/dashboard/inventory/products/${product.id}`} className="text-start block w-full">{strings.viewDetails}</Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/inventory/products/${product.id}`}>Edit Product</Link>
+                          <ProductForm product={product} onSuccess={() => setRefreshKey(k => k + 1)}>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-start cursor-pointer">
+                              {strings.editProduct}
+                            </DropdownMenuItem>
+                          </ProductForm>
+                          <DropdownMenuItem className="text-red-500 cursor-pointer text-start" onClick={() => handleDeleteProduct(product.id)}>
+                            {strings.deleteText}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

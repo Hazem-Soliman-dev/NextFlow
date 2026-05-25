@@ -3,7 +3,10 @@
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Cell } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+import { useLang } from "@/lib/lang-context"
+
 export function DealFunnel({ deals }: { deals: any[] }) {
+  const { strings } = useLang()
   // Aggregate deals by stage
   const stages = ["LEAD", "QUALIFIED", "PROPOSAL", "WON"]
   const colors = {
@@ -24,9 +27,9 @@ export function DealFunnel({ deals }: { deals: any[] }) {
   })
 
   return (
-    <Card className="border-border/50 bg-zinc-950/40">
+    <Card className="border-border/50 bg-card/40">
       <CardHeader>
-        <CardTitle className="text-lg">Pipeline Funnel</CardTitle>
+        <CardTitle className="text-lg">{strings.funnelTitle}</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px] w-full">
@@ -47,7 +50,7 @@ export function DealFunnel({ deals }: { deals: any[] }) {
                       <div className="rounded-lg border border-border/50 bg-background/95 p-3 shadow-xl backdrop-blur-sm">
                         <p className="font-semibold">{data.name}</p>
                         <p className="text-indigo-400 font-bold mt-1">${data.value.toLocaleString()}</p>
-                        <p className="text-muted-foreground text-xs">{data.count} Deals</p>
+                        <p className="text-muted-foreground text-xs">{data.count} {strings.dealsCountLabel}</p>
                       </div>
                     )
                   }

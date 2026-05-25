@@ -3,20 +3,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertTriangle, Package } from "lucide-react"
 
+import { useLang } from "@/lib/lang-context"
+
 export function StockAlertsWidget({ products }: { products: any[] }) {
+  const { strings } = useLang()
   const lowStockProducts = products.filter(p => p.stock <= p.threshold).slice(0, 5)
 
   return (
-    <Card className="border-border/50 bg-zinc-950/40">
+    <Card className="border-border/50 bg-card/40">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-amber-500" />
-          Low Stock Alerts
+          {strings.lowStockAlerts}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {lowStockProducts.length === 0 ? (
-          <p className="text-sm text-muted-foreground py-4 text-center">All inventory levels are healthy.</p>
+          <p className="text-sm text-muted-foreground py-4 text-center">{strings.stockHealthy}</p>
         ) : (
           <div className="space-y-4">
             {lowStockProducts.map(product => (
@@ -25,14 +28,14 @@ export function StockAlertsWidget({ products }: { products: any[] }) {
                   <div className="h-8 w-8 rounded bg-muted flex items-center justify-center">
                     <Package className="h-4 w-4 text-muted-foreground" />
                   </div>
-                  <div>
+                  <div className="text-start">
                     <p className="font-semibold text-sm leading-tight">{product.name}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Threshold: {product.threshold}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{strings.threshold}: {product.threshold}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right ml-4 rtl:mr-4 rtl:ml-0">
                   <span className="font-bold text-red-500">{product.stock}</span>
-                  <span className="text-xs text-muted-foreground ml-1">left</span>
+                  <span className="text-xs text-muted-foreground ml-1 rtl:mr-1 rtl:ml-0">{strings.left}</span>
                 </div>
               </div>
             ))}
